@@ -1,0 +1,26 @@
+{
+  "name": "template-engine",
+  "version": "1.0.0",
+  "description": "A software engineering team generator command line application and tests.",
+  "main": "app.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "jest --verbose test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yjmiranda/template-engine"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/yjmiranda/template-engine/blob/master/README.md",
+  "dependencies": {
+    "inquirer": "^6.3.1"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0"
+  }
+}
