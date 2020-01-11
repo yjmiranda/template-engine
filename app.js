@@ -4,8 +4,11 @@ const Manager = require("./lib/manager");
 const Engineer = require("./lib/engineer");
 const Intern = require("./lib/intern");
 
+//stores employee objects
 const employees = [];
 
+//runs on app start
+//gathers manager info
 inquirer
     .prompt([
         {
@@ -31,10 +34,14 @@ inquirer
     ])
     .then(function(info){
 
+        //write manager info to object
         createEmployeeObject(info, "Manager");
+
+        //run the promts to gather the employee info
         gatherEmployeeInfo();
     });
 
+//gathers employee information
 function gatherEmployeeInfo(){
         inquirer
             .prompt([
@@ -76,11 +83,14 @@ function gatherEmployeeInfo(){
                                 choices: ["Yes","No"]
                             }
                         ]).then(function(info){
+                            //use the information gathered to create the employee object
                             createEmployeeObject(info, choice.employeeType);
                             if (info.keepGoing === "Yes"){
                                 gatherEmployeeInfo();
                             } else {
+                                //generate and HTML template using the objects inside the employees array
                                 let htmlFile = generateHTMLtemplate(employees);
+                                //use the generated template to write the HTML file
                                 writeHTMLfile(htmlFile);
                             }
                         });
@@ -114,11 +124,14 @@ function gatherEmployeeInfo(){
                                 choices: ["Yes","No"]
                             }
                         ]).then(function(info){
+                            //use the information gathered to create the employee object
                             createEmployeeObject(info, choice.employeeType);
                             if (info.keepGoing === "Yes"){
                                 gatherEmployeeInfo();
                             } else {
+                                //generate and HTML template using the objects inside the employees array
                                 let htmlFile = generateHTMLtemplate(employees);
+                                //use the generated template to write the HTML file
                                 writeHTMLfile(htmlFile);
                             }
                         });
@@ -126,6 +139,7 @@ function gatherEmployeeInfo(){
             });
 };
 
+//creathes the different employee objects and pushes them to the employees array
 function createEmployeeObject(info,type){
     if(type === "Manager"){
         let manager = new Manager(info.name, info.id , info.email, info.officeNumber);
@@ -139,6 +153,7 @@ function createEmployeeObject(info,type){
     }
 };
 
+//writes the HTML file using a generated template
 function writeHTMLfile(template){
 
     fs.writeFile('./output/team.html', template, (err) => {
@@ -148,7 +163,9 @@ function writeHTMLfile(template){
       
 }
 
+//generates the HTML template
 function generateHTMLtemplate(array){
+    // the top of the HTML template
     let htmlTop = 
         `
         <!doctype html>
@@ -197,6 +214,7 @@ function generateHTMLtemplate(array){
             <div class="container">
                 <div class="row mb-5">
         `;
+    //the end of the HTML template
     let htmlEnd = 
         `
                 </div>
@@ -209,10 +227,18 @@ function generateHTMLtemplate(array){
         </body>
         </html>
         `;
+
+    //initialize the middle of the html as an empty template
     let htmlMiddle = ``;
+
+    //will be used to store the full template
     let htmlFile;
+
+    //an id for css styling
     let id = "";
     
+    //cycles through each object in the employees array, generates the appropriate card,
+    //and concatenates the card to the htmlMiddle variable
     for(var i = 0; i < array.length; i++){
         if (i<=1){
             id = "id2"
@@ -231,11 +257,14 @@ function generateHTMLtemplate(array){
         }
     }
 
+    //concatenate the top, middle, and end templates into a single variable
     htmlFile = htmlTop + htmlMiddle + htmlEnd;
 
+    //return the full template
     return htmlFile;
 }
 
+//generates an HTML card template for a Manager object
 function generateManagerCard(manager){
     let managerCard = 
         `
@@ -259,6 +288,7 @@ function generateManagerCard(manager){
     return managerCard;
 }
 
+//generates an HTML card template for an Engineer object
 function generateEngineerCard(engineer, id){
     let engineerCard = 
         `
@@ -282,6 +312,7 @@ function generateEngineerCard(engineer, id){
     return engineerCard;
 }
 
+//generates and HTML card template for an Intern object
 function generateInternCard(intern, id){
     let internCard = 
         `
