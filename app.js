@@ -1,4 +1,5 @@
 const inquirer = require("inquirer");
+const fs = require("fs");
 const Manager = require("./lib/manager");
 const Engineer = require("./lib/engineer");
 const Intern = require("./lib/intern");
@@ -79,7 +80,8 @@ function gatherEmployeeInfo(){
                             if (info.keepGoing === "Yes"){
                                 gatherEmployeeInfo();
                             } else {
-                                console.log(employees);
+                                let htmlFile = generateHTMLtemplate(employees);
+                                writeHTMLfile(htmlFile);
                             }
                         });
                 } else if (choice.employeeType === "Intern"){
@@ -116,12 +118,13 @@ function gatherEmployeeInfo(){
                             if (info.keepGoing === "Yes"){
                                 gatherEmployeeInfo();
                             } else {
-                                console.log(employees);
+                                let htmlFile = generateHTMLtemplate(employees);
+                                writeHTMLfile(htmlFile);
                             }
                         });
                 }
             });
-}
+};
 
 function createEmployeeObject(info,type){
     if(type === "Manager"){
@@ -135,3 +138,169 @@ function createEmployeeObject(info,type){
         employees.push(intern);
     }
 };
+
+function writeHTMLfile(template){
+
+    fs.writeFile('./output/team.html', template, (err) => {
+        if (err) throw err;
+        console.log('Successfully created team.html!');
+      });
+      
+}
+
+function generateHTMLtemplate(array){
+    let htmlTop = 
+        `
+        <!doctype html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+            <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+            <title>Team Profile</title>
+          </head>
+          <body>
+        
+            <style>
+                html{
+                    height: 100%;
+                }
+        
+                body{
+                    min-height: 100%;
+                }
+
+                #id4{
+                    margin-top: 30px;
+                }
+                
+                @media screen and (max-width: 991px){
+                    #id3{
+                        margin-top: 30px;
+                    }
+                }
+        
+                @media screen and (max-width: 767px){
+                    #id2{
+                        margin-top: 30px;
+                    }
+                }
+            </style>
+        
+            <div class="jumbotron jumbotron-fluid text-white text-center bg-dark">
+                <div class="container">
+                  <h1 class="display-4">My Team</h1>
+                </div>
+            </div>
+        
+            <div class="container">
+                <div class="row mb-5">
+        `;
+    let htmlEnd = 
+        `
+                </div>
+            </div>
+
+
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        </body>
+        </html>
+        `;
+    let htmlMiddle = ``;
+    let htmlFile;
+    let id = "";
+    
+    for(var i = 0; i < array.length; i++){
+        if (i<=1){
+            id = "id2"
+        } else if(i === 2) {
+            id = "id3"
+        } else {
+            id = "id4"
+        }
+
+        if(array[i] instanceof Manager){
+            htmlMiddle += generateManagerCard(array[i]); 
+        } else if(array[i] instanceof Engineer){
+            htmlMiddle += generateEngineerCard(array[i],id);
+        } else if(array[i] instanceof Intern){
+            htmlMiddle += generateInternCard(array[i],id);
+        }
+    }
+
+    htmlFile = htmlTop + htmlMiddle + htmlEnd;
+
+    return htmlFile;
+}
+
+function generateManagerCard(manager){
+    let managerCard = 
+        `
+        <div class="col-12 col-md-6 col-lg-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white text-center">
+                    <h3>${manager.name}</h3>
+                    <h3><i class="fas fa-paste pr-1"></i>${manager.role}</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <ul class="list-group">
+                        <li class="list-group-item">ID: ${manager.id}</li>
+                        <li class="list-group-item">Email: ${manager.email}</li>
+                        <li class="list-group-item">Office Number: ${manager.officeNumber}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>   
+        `;
+    
+    return managerCard;
+}
+
+function generateEngineerCard(engineer, id){
+    let engineerCard = 
+        `
+        <div class="col-12 col-md-6 col-lg-4" id="${id}">
+            <div class="card">
+                <div class="card-header bg-danger text-white text-center">
+                    <h3>${engineer.name}</h3>
+                    <h3><i class="fas fa-cogs pr-1"></i>${engineer.role}</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <ul class="list-group">
+                        <li class="list-group-item">ID: ${engineer.id}</li>
+                        <li class="list-group-item">Email: ${engineer.email}</li>
+                        <li class="list-group-item">GitHub: ${engineer.github}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>   
+        `;
+    
+    return engineerCard;
+}
+
+function generateInternCard(intern, id){
+    let internCard = 
+        `
+        <div class="col-12 col-md-6 col-lg-4" id="${id}">
+            <div class="card">
+                <div class="card-header bg-danger text-white text-center">
+                    <h3>${intern.name}</h3>
+                    <h3><i class="fas fa-user-graduate pr-1"></i>${intern.role}</h3>
+                </div>
+                <div class="card-body bg-light">
+                    <ul class="list-group">
+                        <li class="list-group-item">ID: ${intern.id}</li>
+                        <li class="list-group-item">Email: ${intern.email}</li>
+                        <li class="list-group-item">School: ${intern.school}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>   
+        `;
+    
+    return internCard;
+}
